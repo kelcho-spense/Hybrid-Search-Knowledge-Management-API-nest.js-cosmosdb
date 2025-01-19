@@ -1,0 +1,21 @@
+### Health Check
+GET http://localhost:8000/hello
+
+### Search knowledge items
+GET http://localhost:8000/knowledge-items/search?searchText=project management&top=10
+
+### Create knowledge item
+POST http://localhost:8000/knowledge-items
+Content-Type: application/json
+
+{
+  "title": "Project Management Best Practices",
+  "content": "This document outlines the best practices for project management...",
+  "itemType": "bestPractice",
+  "metadata": {
+    "author": "Jane Doe",
+    "tags": ["project management", "best practices"],
+    "department": "PMO",
+    "projectContext": "enterprise"
+  }
+}
