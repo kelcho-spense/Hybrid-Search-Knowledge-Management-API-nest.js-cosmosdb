@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+// src/knowledge-items/knowledge-items.controller.ts
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { KnowledgeItemsService } from './knowledge-items.service';
 import { CreateKnowledgeItemDto } from './dto/create-knowledge-item.dto';
-import { UpdateKnowledgeItemDto } from './dto/update-knowledge-item.dto';
+import { SearchQueryDto } from './dto/search-query.dto';
 
 @Controller('knowledge-items')
 export class KnowledgeItemsController {
@@ -12,23 +13,8 @@ export class KnowledgeItemsController {
     return this.knowledgeItemsService.create(createKnowledgeItemDto);
   }
 
-  @Get()
-  findAll() {
-    return this.knowledgeItemsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.knowledgeItemsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateKnowledgeItemDto: UpdateKnowledgeItemDto) {
-    return this.knowledgeItemsService.update(+id, updateKnowledgeItemDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.knowledgeItemsService.remove(+id);
+  @Get('search')
+  async search(@Query() query: SearchQueryDto) {
+    return this.knowledgeItemsService.searchByContent(query);
   }
 }

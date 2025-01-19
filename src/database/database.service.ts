@@ -9,8 +9,8 @@ import {
   CosmosDbDiagnosticLevel,
 } from '@azure/cosmos';
 
-import { productVectorEmbeddingPolicy } from './vectorEmbeddingPolicies';
-import { productIndexingPolicy } from './indexingPolicies';
+import { knowledgeItemVectorEmbeddingPolicy } from './vectorEmbeddingPolicies';
+import { knowledgeItemIndexingPolicy } from './indexingPolicies';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -22,10 +22,9 @@ export class DatabaseService implements OnModuleInit {
     this.client = new CosmosClient({
       endpoint: this.configService.get<string>('AZURE_COSMOS_DB_ENDPOINT'),
       key: this.configService.get<string>('AZURE_COSMOS_DB_KEY'),
-      diagnosticLevel:
-        this.configService.get<string>('NODE_ENV') != 'production'
-          ? CosmosDbDiagnosticLevel.debug
-          : CosmosDbDiagnosticLevel.info,
+      diagnosticLevel: this.configService.get<string>('NODE_ENV') != 'production'
+        ? CosmosDbDiagnosticLevel.debug
+        : CosmosDbDiagnosticLevel.info,
     });
   }
 
@@ -34,39 +33,25 @@ export class DatabaseService implements OnModuleInit {
   }
 
   private async initDatabase() {
-    // Create database if it doesn't exist
     const dbName = this.configService.get<string>('AZURE_COSMOS_DB_NAME');
     const { database } = await this.client.databases.createIfNotExists({
       id: dbName,
     });
     this.database = database;
 
-    // Create containers if it doesn't exist
-    const { container: legalDocumentsContainer } =
-      await this.database.containers.createIfNotExists({
-        id: 'legal-documents',
-        partitionKey: {
-          paths: ['/id'],
-          version: PartitionKeyDefinitionVersion.V2,
-          kind: PartitionKeyKind.Hash,
-        },
-        indexingPolicy: {
-          includedPaths: [
-            {
-              path: '/*',
-            },
-          ],
-          compositeIndexes: [
-            [
-              {
-                path: '/content',
-                order: 'ascending',
-              },
-            ],
-          ],
-        },
-      });
-    this.container = legalDocumentsContainer;
+    const { container } = await this.database.containers.createIfNotExists({
+      id: 'knowledge-items',
+      partitionKey: {
+        paths: ['/metadata/department'],
+        version: PartitionKeyDefinitionVersion.V2,
+        kind: PartitionKeyKind.Hash,
+      },
+      indexingPolicy: knowledgeItemIndexingPolicy,
+      analyticalStoreTtl: 0,
+      vectorSearchConfiguration: knowledgeItemVectorEmbeddingPolicy
+    });
+    
+    this.container = container;
   }
 
   getContainer(): Container {
