@@ -10,9 +10,11 @@ export class KnowledgeItemsService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async create(createKnowledgeItemDto: CreateKnowledgeItemDto) {
-    const contentVector = await generateTextVector(createKnowledgeItemDto.content);
+    const contentVector = await generateTextVector(
+      createKnowledgeItemDto.content,
+    );
     const container = this.databaseService.getContainer();
-    
+
     const item = {
       ...createKnowledgeItemDto,
       contentVector,
@@ -26,7 +28,7 @@ export class KnowledgeItemsService {
   async searchByContent(query: SearchQueryDto) {
     const container = this.databaseService.getContainer();
     const searchVector = await generateTextVector(query.searchText);
-    
+
     // Vector search query
     const vectorQuery = {
       query: `
@@ -35,9 +37,9 @@ export class KnowledgeItemsService {
         FROM c 
         ORDER BY vectorDistance ASC`,
       parameters: [
-        { name: "@searchVector", value: searchVector },
-        { name: "@top", value: query.top }
-      ]
+        { name: '@searchVector', value: searchVector },
+        { name: '@top', value: query.top },
+      ],
     };
 
     // Full-text search query
@@ -49,20 +51,20 @@ export class KnowledgeItemsService {
         WHERE CONTAINS(c.content, @searchText, true)
         ORDER BY c._ts DESC`,
       parameters: [
-        { name: "@searchText", value: query.searchText },
-        { name: "@top", value: query.top }
-      ]
+        { name: '@searchText', value: query.searchText },
+        { name: '@top', value: query.top },
+      ],
     };
 
     const [vectorResults, textResults] = await Promise.all([
       container.items.query(vectorQuery).fetchAll(),
-      container.items.query(textQuery).fetchAll()
+      container.items.query(textQuery).fetchAll(),
     ]);
 
     return this.combineSearchResults(
       vectorResults.resources,
       textResults.resources,
-      query.top
+      query.top,
     );
   }
 
@@ -70,9 +72,9 @@ export class KnowledgeItemsService {
     vectorResults: any[],
     textResults: any[],
     k: number,
-    constant: number = 60
+    constant: number = 60,
   ): any[] {
-    const scoreMap = new Map<string, { item: any, score: number }>();
+    const scoreMap = new Map<string, { item: any; score: number }>();
 
     vectorResults.forEach((item, index) => {
       const rrf = 1 / (constant + index + 1);
@@ -91,9 +93,9 @@ export class KnowledgeItemsService {
     return Array.from(scoreMap.values())
       .sort((a, b) => b.score - a.score)
       .slice(0, k)
-      .map(entry => ({
+      .map((entry) => ({
         ...entry.item,
-        relevanceScore: entry.score
+        relevanceScore: entry.score,
       }));
   }
 }

@@ -12,9 +12,9 @@ export class AppService {
     return 'Hello World!';
   }
 
-  async generateFakeKnowledgeItems(knowledgeItemsNumber: number = 20): Promise<string> {
-    
-
+  async generateFakeKnowledgeItems(
+    knowledgeItemsNumber: number = 20,
+  ): Promise<string> {
     return `Successfully generated and inserted ${3} knowledgeItems`;
   }
 }

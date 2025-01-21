@@ -17,6 +17,6 @@ export const knowledgeItemVectorEmbeddingPolicy: VectorEmbeddingPolicy = {
       dataType: VectorEmbeddingDataType.Float32,
       dimensions: 1536,
       distanceFunction: VectorEmbeddingDistanceFunction.Cosine,
-    }
+    },
   ],
 };

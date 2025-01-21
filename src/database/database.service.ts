@@ -22,9 +22,10 @@ export class DatabaseService implements OnModuleInit {
     this.client = new CosmosClient({
       endpoint: this.configService.get<string>('AZURE_COSMOS_DB_ENDPOINT'),
       key: this.configService.get<string>('AZURE_COSMOS_DB_KEY'),
-      diagnosticLevel: this.configService.get<string>('NODE_ENV') != 'production'
-        ? CosmosDbDiagnosticLevel.debug
-        : CosmosDbDiagnosticLevel.info,
+      diagnosticLevel:
+        this.configService.get<string>('NODE_ENV') != 'production'
+          ? CosmosDbDiagnosticLevel.debug
+          : CosmosDbDiagnosticLevel.info,
     });
   }
 
@@ -48,9 +49,9 @@ export class DatabaseService implements OnModuleInit {
       },
       indexingPolicy: knowledgeItemIndexingPolicy,
       analyticalStoreTtl: 0,
-      vectorSearchConfiguration: knowledgeItemVectorEmbeddingPolicy
+      vectorSearchConfiguration: knowledgeItemVectorEmbeddingPolicy,
     });
-    
+
     this.container = container;
   }
 
