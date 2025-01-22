@@ -10,7 +10,10 @@ import {
 } from '@azure/cosmos';
 
 import { knowledgeItemVectorEmbeddingPolicy } from './vectorEmbeddingPolicies';
-import { knowledgeItemIndexingPolicy } from './indexingPolicies';
+import {
+  knowledgeItemFullTextPolicy,
+  knowledgeItemIndexingPolicy,
+} from './indexingPolicies';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -48,8 +51,8 @@ export class DatabaseService implements OnModuleInit {
         kind: PartitionKeyKind.Hash,
       },
       indexingPolicy: knowledgeItemIndexingPolicy,
-      analyticalStoreTtl: 0,
-      vectorSearchConfiguration: knowledgeItemVectorEmbeddingPolicy,
+      vectorEmbeddingPolicy: knowledgeItemVectorEmbeddingPolicy,
+      fullTextPolicy: knowledgeItemFullTextPolicy,
     });
 
     this.container = container;

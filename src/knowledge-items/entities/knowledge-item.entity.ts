@@ -13,4 +13,5 @@ export class KnowledgeItem {
     projectContext?: string;
   };
   contentVector?: number[];
+  metadataVector?: number[];
 }

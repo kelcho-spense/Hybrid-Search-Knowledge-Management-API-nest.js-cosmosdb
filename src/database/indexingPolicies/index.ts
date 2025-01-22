@@ -1,1 +1,2 @@
-export * from './vectorEmbeddingPolicies';
+export * from './FullTextPolicy';
+export * from './IndexingPolicy';
