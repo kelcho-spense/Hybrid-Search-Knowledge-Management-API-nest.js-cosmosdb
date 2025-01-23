@@ -3,7 +3,7 @@ import {
   VectorEmbeddingDistanceFunction,
   VectorEmbeddingPolicy,
 } from '@azure/cosmos';
-
+// Vector policies for knowledge items
 export const knowledgeItemVectorEmbeddingPolicy: VectorEmbeddingPolicy = {
   vectorEmbeddings: [
     {

@@ -59,3 +59,10 @@ FROM c
 WHERE VectorDistance(c.vector1, c.vector2) > 0.8
 ORDER BY VectorDistance(c.vector1, c.vector2)
 `
+
+# How to use hybrid search
+- [Enable the Vector Search in Azure Cosmos DB for NoSQL feature](https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/vector-search#enable-the-vector-indexing-and-search-feature).
+- Enable the [Full Text & Hybrid Search for NoSQL preview feature](https://learn.microsoft.com/en-us/azure/cosmos-db/gen-ai/full-text-search#enable-the-full-text-and-hybrid-search-for-nosql-preview-feature).
+- Create a container with a vector policy, full text policy, vector index, and full text index.
+- Insert your data with text and vector properties.
+Run hybrid queries against the data.

@@ -10,10 +10,8 @@ import {
 } from '@azure/cosmos';
 
 import { knowledgeItemVectorEmbeddingPolicy } from './vectorEmbeddingPolicies';
-import {
-  knowledgeItemFullTextPolicy,
-  knowledgeItemIndexingPolicy,
-} from './indexingPolicies';
+import { knowledgeItemFullTextPolicy } from './fullTextPolicies';
+import { knowledgeItemIndexingPolicy } from './indexingPolicies';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
