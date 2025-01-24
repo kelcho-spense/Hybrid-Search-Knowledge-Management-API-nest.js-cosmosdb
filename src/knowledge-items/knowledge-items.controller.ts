@@ -1,8 +1,15 @@
 // src/knowledge-items/knowledge-items.controller.ts
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common';
 import { KnowledgeItemsService } from './knowledge-items.service';
 import { CreateKnowledgeItemDto } from './dto/create-knowledge-item.dto';
-import { SearchQueryDto } from './dto/search-query.dto';
+import { metadataVectorSearchDto, titleFullTextSearchDto } from './dto';
 
 @Controller('knowledge-items')
 export class KnowledgeItemsController {
@@ -13,8 +20,26 @@ export class KnowledgeItemsController {
     return this.knowledgeItemsService.create(createKnowledgeItemDto);
   }
 
-  @Get('search')
-  async search(@Query() query: SearchQueryDto) {
-    return this.knowledgeItemsService.searchByContent(query);
+  @Get('vector-search-metadata')
+  async vectorSearchMetadata(
+    @Query(ValidationPipe) query: metadataVectorSearchDto,
+  ) {
+    return this.knowledgeItemsService.vectorSearchMetadata(query);
   }
+  @Get('vector-search-content')
+  async vectorSearchContent(
+    @Query(ValidationPipe) query: metadataVectorSearchDto,
+  ) {
+    return this.knowledgeItemsService.vectorSearchContent(query);
+  }
+
+  @Get('text-search-title')
+  async textSearch(@Query(ValidationPipe) query: titleFullTextSearchDto) {
+    return this.knowledgeItemsService.titleFullTextSearch(query);
+  }
+
+  // @Get('hybrid-search-department')
+  // async semanticSearchDepartment(@Query() query: VectorSearchDto) {
+  //   return this.knowledgeItemsService.hybridSearchDepartment(query);
+  // }
 }

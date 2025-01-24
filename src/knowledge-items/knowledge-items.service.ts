@@ -1,12 +1,17 @@
 // src/knowledge-items/knowledge-items.service.ts
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { CreateKnowledgeItemDto, SearchQueryDto } from './dto';
+import {
+  contentVectorSearchDto,
+  CreateKnowledgeItemDto,
+  metadataVectorSearchDto,
+  titleFullTextSearchDto,
+} from './dto';
 import { generateTextVector } from '../utils/embedding';
 
 @Injectable()
 export class KnowledgeItemsService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly databaseService: DatabaseService) { }
 
   async create(createKnowledgeItemDto: CreateKnowledgeItemDto) {
     const contentVector = await generateTextVector(
@@ -23,78 +28,135 @@ export class KnowledgeItemsService {
     const { resource } = await container.items.create(item);
     return resource;
   }
-
-  async searchByContent(query: SearchQueryDto) {
+  // vectorSearchContent method
+  async vectorSearchContent(params: contentVectorSearchDto) {
+    const topCount = parseInt(params.top.toString(), 10);
     const container = this.databaseService.getContainer();
-    const searchVector = await generateTextVector(query.searchText);
+    const searchVector = await generateTextVector(params.searchText);
 
-    // Vector search query
-    const vectorQuery = {
+    const querySpec = {
       query: `
-        SELECT TOP @top c.*, 
-        st_distance(c.contentVector, @searchVector) as vectorDistance
-        FROM c 
-        ORDER BY vectorDistance ASC`,
+        SELECT TOP @top
+        c.id, 
+        c.title, 
+        c.content, 
+        c.itemType, 
+        c.metadata, 
+        c.dateCreated,
+        VectorDistance(c.contentVector, @searchVector) as SimilarityScore
+        FROM c
+        ORDER BY VectorDistance(c.contentVector, @searchVector)`,
       parameters: [
+        { name: '@top', value: topCount },
         { name: '@searchVector', value: searchVector },
-        { name: '@top', value: query.top },
       ],
     };
 
-    // Full-text search query
-    const textQuery = {
+    const { resources } = await container.items.query(querySpec).fetchAll();
+    return resources;
+  }
+  // vectorSearchMetadata method
+  async vectorSearchMetadata(params: metadataVectorSearchDto) {
+    const topCount = parseInt(params.top.toString(), 10);
+    const container = this.databaseService.getContainer();
+
+    const vectorSearchQuery = await generateTextVector(params.searchText);
+
+    const querySpec = {
       query: `
-        SELECT TOP @top c.*, 
-        1 as textScore
-        FROM c 
-        WHERE CONTAINS(c.content, @searchText, true)
-        ORDER BY c._ts DESC`,
+      SELECT TOP @top 
+        c.id,
+        c.title,
+        c.content,
+        c.itemType,
+        c.metadata,
+        c.dateCreated,
+        VectorDistance(c.metadataVector, @searchVector) AS SimilarityScore
+      FROM c
+      WHERE c.metadata.department = @department 
+        AND c.metadata.projectContext = @projectContext
+      ORDER BY VectorDistance(c.metadataVector, @searchVector)`,
       parameters: [
-        { name: '@searchText', value: query.searchText },
-        { name: '@top', value: query.top },
+        { name: '@top', value: topCount },
+        { name: '@department', value: params.department },
+        { name: '@projectContext', value: params.projectContext },
+        { name: '@searchVector', value: vectorSearchQuery },
       ],
     };
 
-    const [vectorResults, textResults] = await Promise.all([
-      container.items.query(vectorQuery).fetchAll(),
-      container.items.query(textQuery).fetchAll(),
-    ]);
+    const { resources } = await container.items.query(querySpec).fetchAll();
+    return resources;
+  }
+  // titleFullTextSearch method
+  // async titleFullTextSearch(params: titleFullTextSearchDto) {
+  //   const topCount = parseInt(params.top.toString(), 10);
+  //   const container = this.databaseService.getContainer();
+  //   const searchTerms = params.searchText.split(' ');
 
-    return this.combineSearchResults(
-      vectorResults.resources,
-      textResults.resources,
-      query.top,
-    );
+  //   const querySpec = {
+  //     query: `
+  //     SELECT TOP @top 
+  //       c.id,
+  //       c.title,
+  //       c.content,
+  //       c.itemType,
+  //       c.metadata,
+  //       c.dateCreated
+  //     FROM c
+  //     WHERE FullTextContains(c.title, ${JSON.stringify(searchTerms)})
+  //     ORDER BY RANK FullTextScore(c.title, ${JSON.stringify(searchTerms)})`,
+  //     parameters: [
+  //       { name: '@top', value: topCount },
+  //     ],
+  //   };
+
+  //   const { resources } = await container.items.query(querySpec).fetchAll();
+  //   return resources;
+  // }
+
+  async titleFullTextSearch(searchText: string, top: number = 10) {
+    const container = this.databaseService.getContainer();
+    const keywords = searchText.split(' ').filter(k => k.length > 0);
+
+    const querySpec = {
+      query: `
+        SELECT TOP @top *
+        FROM c 
+        WHERE FullTextContainsAny(c.title, ${keywords.map((_, i) => `@kw${i}`).join(', ')})
+        ORDER BY c._ts DESC
+      `,
+      parameters: [
+        ...keywords.map((kw, i) => ({ name: `@kw${i}`, value: kw })),
+        { name: '@top', value: top },
+      ],
+    };
+
+    const { resources } = await container.items.query(querySpec).fetchAll();
+    return resources;
   }
 
-  private combineSearchResults(
-    vectorResults: any[],
-    textResults: any[],
-    k: number,
-    constant: number = 60,
-  ): any[] {
-    const scoreMap = new Map<string, { item: any; score: number }>();
+  // async hybridSearchDepartment(params: VectorSearchDto) {
+  //   const container = this.databaseService.getContainer();
+  //   const searchVector = await generateTextVector(params.searchText);
 
-    vectorResults.forEach((item, index) => {
-      const rrf = 1 / (constant + index + 1);
-      scoreMap.set(item.id, { item, score: rrf });
-    });
+  //   const querySpec = {
+  //     query: `
+  //       SELECT TOP @top *
+  //       FROM c
+  //       WHERE c.metadata.department = @department
+  //       ORDER BY RANK RRF(
+  //         VectorDistance(c.contentVector, @searchVector),
+  //         FullTextScore(c.content, @searchTerms)
+  //       )`,
+  //     parameters: [
+  //       { name: '@top', value: params.top },
+  //       { name: '@department', value: params.department },
+  //       { name: '@searchVector', value: searchVector },
+  //       { name: '@searchTerms', value: params.searchText.split(' ') },
+  //     ],
+  //   };
 
-    textResults.forEach((item, index) => {
-      const rrf = 1 / (constant + index + 1);
-      if (scoreMap.has(item.id)) {
-        scoreMap.get(item.id).score += rrf;
-      } else {
-        scoreMap.set(item.id, { item, score: rrf });
-      }
-    });
-
-    return Array.from(scoreMap.values())
-      .sort((a, b) => b.score - a.score)
-      .slice(0, k)
-      .map((entry) => ({
-        ...entry.item,
-        relevanceScore: entry.score,
-      }));
-  }
+  //   const { resources } = await container.items.query(querySpec).fetchAll();
+  //   return resources;
+  // }
 }
