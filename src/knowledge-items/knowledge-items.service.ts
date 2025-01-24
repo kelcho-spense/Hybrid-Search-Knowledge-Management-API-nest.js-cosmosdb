@@ -1,8 +1,7 @@
 // src/knowledge-items/knowledge-items.service.ts
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { CreateKnowledgeItemDto } from './dto/create-knowledge-item.dto';
-import { SearchQueryDto } from './dto/search-query.dto';
+import { CreateKnowledgeItemDto, SearchQueryDto } from './dto';
 import { generateTextVector } from '../utils/embedding';
 
 @Injectable()

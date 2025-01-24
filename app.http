@@ -68,3 +68,6 @@ GET http://localhost:8000/knowledge-items/advanced-hybrid-search
     &weightVector=0.6
     &weightText=0.4
     &minScore=0.7
+
+### generate fake data
+GET http://localhost:8000/generate-fake-knowledgeItems

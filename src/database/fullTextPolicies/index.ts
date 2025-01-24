@@ -8,7 +8,7 @@ export const knowledgeItemFullTextPolicy: FullTextPolicy = {
       path: '/title',
     },
     {
-      path: '/context',
+      path: '/content',
       language: 'en-US',
     },
   ],

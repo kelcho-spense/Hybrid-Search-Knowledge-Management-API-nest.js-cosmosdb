@@ -5,6 +5,7 @@ import { MyLoggerModule } from './my-logger/my-logger.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { KnowledgeItemsModule } from './knowledge-items/knowledge-items.module';
+import { KnowledgeItemsService } from './knowledge-items/knowledge-items.service';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { KnowledgeItemsModule } from './knowledge-items/knowledge-items.module';
     KnowledgeItemsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, KnowledgeItemsService],
 })
 export class AppModule {}
