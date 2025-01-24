@@ -1,9 +1,6 @@
 ### Health Check
 GET http://localhost:8000/hello
 
-### Search knowledge items
-GET http://localhost:8000/knowledge-items/search?searchText=project management&top=10
-
 ### Create knowledge item
 POST http://localhost:8000/knowledge-items
 Content-Type: application/json
@@ -19,3 +16,55 @@ Content-Type: application/json
     "projectContext": "enterprise"
   }
 }
+
+...existing code...
+
+### Hybrid Search (Vector + Text)
+GET http://localhost:8000/knowledge-items/hybrid-search
+    ?searchText=project management
+    &top=10
+    &department=PMO
+    &minScore=0.7
+
+### Vector Search (Content)
+GET http://localhost:8000/knowledge-items/vector-search/content
+    ?searchText=project management methodology
+    &top=10
+    &department=PMO
+
+### Vector Search (Metadata)
+GET http://localhost:8000/knowledge-items/vector-search/metadata
+    ?searchText=enterprise project management
+    &top=10
+    &department=PMO
+
+### Full Text Search
+GET http://localhost:8000/knowledge-items/text-search
+    ?searchText=project management
+    &top=10
+    &department=PMO
+
+### Multi-Vector Search (Combined Content + Metadata)
+GET http://localhost:8000/knowledge-items/multi-vector-search
+    ?searchText=enterprise project management best practices
+    &top=10
+    &department=PMO
+    &weightContent=0.7
+    &weightMetadata=0.3
+
+### Semantic Search by Department
+GET http://localhost:8000/knowledge-items/semantic-search
+    ?searchText=project management
+    &department=PMO
+    &top=10
+    &searchType=content
+
+### Advanced Hybrid Search
+GET http://localhost:8000/knowledge-items/advanced-hybrid-search
+    ?searchText=project management
+    &department=PMO
+    &tags=best practices,methodology
+    &top=10
+    &weightVector=0.6
+    &weightText=0.4
+    &minScore=0.7
