@@ -17,6 +17,9 @@ Content-Type: application/json
   }
 }
 
+### get all knowledge items
+GET http://localhost:8000/knowledge-items/all
+
 ### Vector Search (metadata)
 GET http://localhost:8000/knowledge-items/vector-search-metadata
     ?searchText=enterprise project management
@@ -37,8 +40,8 @@ GET http://localhost:8000/knowledge-items/text-search-title
 
 ### Full Text Search(Content)
 GET http://localhost:8000/knowledge-items/text-search-content
-    ?searchText=project management
-    &top=10
+    ?searchText=Sublime
+    &top=1
 
 ### Hybrid Search-content (vector + full-text)
 GET http://localhost:8000/knowledge-items/hybrid-search-content

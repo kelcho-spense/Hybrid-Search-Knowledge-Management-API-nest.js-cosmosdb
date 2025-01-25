@@ -11,7 +11,7 @@ import { generateTextVector } from '../utils/embedding';
 
 @Injectable()
 export class KnowledgeItemsService {
-  constructor(private readonly databaseService: DatabaseService) { }
+  constructor(private readonly databaseService: DatabaseService) {}
 
   async create(createKnowledgeItemDto: CreateKnowledgeItemDto) {
     const contentVector = await generateTextVector(
@@ -28,6 +28,26 @@ export class KnowledgeItemsService {
     const { resource } = await container.items.create(item);
     return resource;
   }
+
+  async allKnowledgeItems() {
+    const container = this.databaseService.getContainer();
+
+    const { resources } = await container.items
+      .query(
+        `
+        SELECT 
+        c.id, 
+        c.title, 
+        c.content, 
+        c.itemType, 
+        c.metadata, 
+        c.dateCreated
+        FROM c `,
+      )
+      .fetchAll();
+    return resources;
+  }
+
   // vectorSearchContent method
   async vectorSearchContent(params: contentVectorSearchDto) {
     const topCount = parseInt(params.top.toString(), 10);
@@ -87,32 +107,6 @@ export class KnowledgeItemsService {
     const { resources } = await container.items.query(querySpec).fetchAll();
     return resources;
   }
-  // titleFullTextSearch method
-  // async titleFullTextSearch(params: titleFullTextSearchDto) {
-  //   const topCount = parseInt(params.top.toString(), 10);
-  //   const container = this.databaseService.getContainer();
-  //   const searchTerms = params.searchText.split(' ');
-
-  //   const querySpec = {
-  //     query: `
-  //     SELECT TOP @top
-  //       c.id,
-  //       c.title,
-  //       c.content,
-  //       c.itemType,
-  //       c.metadata,
-  //       c.dateCreated
-  //     FROM c
-  //     WHERE FullTextContains(c.title, ${JSON.stringify(searchTerms)})
-  //     ORDER BY RANK FullTextScore(c.title, ${JSON.stringify(searchTerms)})`,
-  //     parameters: [
-  //       { name: '@top', value: topCount },
-  //     ],
-  //   };
-
-  //   const { resources } = await container.items.query(querySpec).fetchAll();
-  //   return resources;
-  // }
 
   async titleFullTextSearch(titleFullTextSearchDto: fullTextSearchDto) {
     let top = 10;
@@ -135,6 +129,39 @@ export class KnowledgeItemsService {
           c.metadata
         FROM c 
         WHERE FullTextContainsAny(c.title, ${keywords.map((_, i) => `@kw${i}`).join(', ')})
+        ORDER BY c._ts DESC
+      `,
+      parameters: [
+        ...keywords.map((kw, i) => ({ name: `@kw${i}`, value: kw })),
+        { name: '@top', value: top },
+      ],
+    };
+
+    const { resources } = await container.items.query(querySpec).fetchAll();
+    return resources;
+  }
+
+  async contentFullTextSearch(titleFullTextSearchDto: fullTextSearchDto) {
+    let top = 10;
+    const container = this.databaseService.getContainer();
+    const keywords = titleFullTextSearchDto.searchText
+      .split(' ')
+      .filter((k) => k.length > 0);
+    if (titleFullTextSearchDto.top) {
+      top = parseInt(titleFullTextSearchDto.top.toString(), 10);
+    }
+
+    const querySpec = {
+      query: `
+        SELECT TOP @top
+          c.id,
+          c.title,
+          c.content,
+          c.itemType,
+          c.dateCreated,
+          c.metadata
+        FROM c 
+        WHERE FullTextContainsAny(c.content, ${keywords.map((_, i) => `@kw${i}`).join(', ')})
         ORDER BY c._ts DESC
       `,
       parameters: [

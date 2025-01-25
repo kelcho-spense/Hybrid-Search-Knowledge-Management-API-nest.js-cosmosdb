@@ -20,12 +20,18 @@ export class KnowledgeItemsController {
     return this.knowledgeItemsService.create(createKnowledgeItemDto);
   }
 
+  @Get('all')
+  async allKnowledgeItems() {
+    return this.knowledgeItemsService.allKnowledgeItems();
+  }
+
   @Get('vector-search-metadata')
   async vectorSearchMetadata(
     @Query(ValidationPipe) query: metadataVectorSearchDto,
   ) {
     return this.knowledgeItemsService.vectorSearchMetadata(query);
   }
+
   @Get('vector-search-content')
   async vectorSearchContent(
     @Query(ValidationPipe) query: metadataVectorSearchDto,
@@ -34,8 +40,13 @@ export class KnowledgeItemsController {
   }
 
   @Get('text-search-title')
-  async textSearch(@Query(ValidationPipe) query: fullTextSearchDto) {
+  async titleFullTextSearch(@Query(ValidationPipe) query: fullTextSearchDto) {
     return this.knowledgeItemsService.titleFullTextSearch(query);
+  }
+
+  @Get('text-search-content')
+  async contentFullTextSearch(@Query(ValidationPipe) query: fullTextSearchDto) {
+    return this.knowledgeItemsService.contentFullTextSearch(query);
   }
 
   // @Get('hybrid-search-department')
