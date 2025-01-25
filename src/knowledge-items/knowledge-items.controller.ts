@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { KnowledgeItemsService } from './knowledge-items.service';
 import { CreateKnowledgeItemDto } from './dto/create-knowledge-item.dto';
-import { metadataVectorSearchDto, titleFullTextSearchDto } from './dto';
+import { fullTextSearchDto, metadataVectorSearchDto } from './dto';
 
 @Controller('knowledge-items')
 export class KnowledgeItemsController {
@@ -34,7 +34,7 @@ export class KnowledgeItemsController {
   }
 
   @Get('text-search-title')
-  async textSearch(@Query(ValidationPipe) query: titleFullTextSearchDto) {
+  async textSearch(@Query(ValidationPipe) query: fullTextSearchDto) {
     return this.knowledgeItemsService.titleFullTextSearch(query);
   }
 

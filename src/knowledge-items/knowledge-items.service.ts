@@ -4,8 +4,8 @@ import { DatabaseService } from '../database/database.service';
 import {
   contentVectorSearchDto,
   CreateKnowledgeItemDto,
+  fullTextSearchDto,
   metadataVectorSearchDto,
-  titleFullTextSearchDto,
 } from './dto';
 import { generateTextVector } from '../utils/embedding';
 
@@ -95,7 +95,7 @@ export class KnowledgeItemsService {
 
   //   const querySpec = {
   //     query: `
-  //     SELECT TOP @top 
+  //     SELECT TOP @top
   //       c.id,
   //       c.title,
   //       c.content,
@@ -114,13 +114,25 @@ export class KnowledgeItemsService {
   //   return resources;
   // }
 
-  async titleFullTextSearch(searchText: string, top: number = 10) {
+  async titleFullTextSearch(titleFullTextSearchDto: fullTextSearchDto) {
+    let top = 10;
     const container = this.databaseService.getContainer();
-    const keywords = searchText.split(' ').filter(k => k.length > 0);
+    const keywords = titleFullTextSearchDto.searchText
+      .split(' ')
+      .filter((k) => k.length > 0);
+    if (titleFullTextSearchDto.top) {
+      top = parseInt(titleFullTextSearchDto.top.toString(), 10);
+    }
 
     const querySpec = {
       query: `
-        SELECT TOP @top *
+        SELECT TOP @top
+          c.id,
+          c.title,
+          c.content,
+          c.itemType,
+          c.dateCreated,
+          c.metadata
         FROM c 
         WHERE FullTextContainsAny(c.title, ${keywords.map((_, i) => `@kw${i}`).join(', ')})
         ORDER BY c._ts DESC

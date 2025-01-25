@@ -32,15 +32,13 @@ GET http://localhost:8000/knowledge-items/vector-search-content
 
 ### Full Text Search(Title)
 GET http://localhost:8000/knowledge-items/text-search-title
-    ?searchText=project management
+    ?searchText= project
     &top=10
-    &department=PMO
 
 ### Full Text Search(Content)
 GET http://localhost:8000/knowledge-items/text-search-content
     ?searchText=project management
     &top=10
-    &department=PMO
 
 ### Hybrid Search-content (vector + full-text)
 GET http://localhost:8000/knowledge-items/hybrid-search-content
