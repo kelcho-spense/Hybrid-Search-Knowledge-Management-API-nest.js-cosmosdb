@@ -9,7 +9,11 @@ import {
 } from '@nestjs/common';
 import { KnowledgeItemsService } from './knowledge-items.service';
 import { CreateKnowledgeItemDto } from './dto/create-knowledge-item.dto';
-import { fullTextSearchDto, metadataVectorSearchDto } from './dto';
+import {
+  fullTextSearchDto,
+  hybridSearchContentDto,
+  metadataVectorSearchDto,
+} from './dto';
 
 @Controller('knowledge-items')
 export class KnowledgeItemsController {
@@ -49,8 +53,10 @@ export class KnowledgeItemsController {
     return this.knowledgeItemsService.contentFullTextSearch(query);
   }
 
-  // @Get('hybrid-search-department')
-  // async semanticSearchDepartment(@Query() query: VectorSearchDto) {
-  //   return this.knowledgeItemsService.hybridSearchDepartment(query);
-  // }
+  @Get('hybrid-search-content')
+  async hybridSearchContent(
+    @Query(ValidationPipe) query: hybridSearchContentDto,
+  ) {
+    return this.knowledgeItemsService.hybridSearchContent(query);
+  }
 }

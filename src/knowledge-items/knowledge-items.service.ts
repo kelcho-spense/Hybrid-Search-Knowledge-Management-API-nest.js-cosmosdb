@@ -5,6 +5,7 @@ import {
   contentVectorSearchDto,
   CreateKnowledgeItemDto,
   fullTextSearchDto,
+  hybridSearchContentDto,
   metadataVectorSearchDto,
 } from './dto';
 import { generateTextVector } from '../utils/embedding';
@@ -141,14 +142,12 @@ export class KnowledgeItemsService {
     return resources;
   }
 
-  async contentFullTextSearch(titleFullTextSearchDto: fullTextSearchDto) {
+  async contentFullTextSearch(params: fullTextSearchDto) {
     let top = 10;
     const container = this.databaseService.getContainer();
-    const keywords = titleFullTextSearchDto.searchText
-      .split(' ')
-      .filter((k) => k.length > 0);
-    if (titleFullTextSearchDto.top) {
-      top = parseInt(titleFullTextSearchDto.top.toString(), 10);
+    const keywords = params.searchText.split(' ').filter((k) => k.length > 0);
+    if (params.top) {
+      top = parseInt(params.top.toString(), 10);
     }
 
     const querySpec = {
@@ -174,28 +173,80 @@ export class KnowledgeItemsService {
     return resources;
   }
 
-  // async hybridSearchDepartment(params: VectorSearchDto) {
+  // async hybridSearchContent(params: hybridSearchContentDto) {
+  //   let top = 10;
   //   const container = this.databaseService.getContainer();
   //   const searchVector = await generateTextVector(params.searchText);
-
+  //   const searchText = params.searchText.split(' ').filter((k) => k.length > 0);
+  //   if (params.top) {
+  //     top = parseInt(params.top.toString(), 10);
+  //   }
+  //   // https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/query/rrf
   //   const querySpec = {
   //     query: `
-  //       SELECT TOP @top *
+  //       SELECT TOP ${top}
+  //         c.id,
+  //         c.title,
+  //         c.content,
+  //         c.itemType,
+  //         c.dateCreated,
+  //         c.metadata
   //       FROM c
-  //       WHERE c.metadata.department = @department
   //       ORDER BY RANK RRF(
   //         VectorDistance(c.contentVector, @searchVector),
-  //         FullTextScore(c.content, @searchTerms)
+  //         ${searchText.length > 0 ? `FullTextScore(c.content, [${searchText.map((_, idx) => `@searchTerm${idx}`).join(', ')}])` : ''}
   //       )`,
   //     parameters: [
-  //       { name: '@top', value: params.top },
-  //       { name: '@department', value: params.department },
   //       { name: '@searchVector', value: searchVector },
-  //       { name: '@searchTerms', value: params.searchText.split(' ') },
+  //       ...searchText.map((kw, idx) => ({
+  //         name: `@searchTerm${idx}`,
+  //         value: kw,
+  //       })),
   //     ],
   //   };
 
   //   const { resources } = await container.items.query(querySpec).fetchAll();
   //   return resources;
   // }
+
+  async hybridSearchContent(params: hybridSearchContentDto) {
+    let top = 10;
+    const container = this.databaseService.getContainer();
+
+    // Generate vector and prepare search terms
+    const searchVector = await generateTextVector('Demonstro, portal');
+    const searchTerms = params.searchText
+      .split(' ')
+      .filter((term) => term.length > 0);
+    if (params.top) {
+      top = parseInt(params.top.toString(), 10);
+      if (isNaN(top)) {
+        throw new Error("The 'top' parameter must be a valid number.");
+      }
+    }
+
+    //     Construct query with proper RRF syntax
+    //     `SELECT TOP 10 *
+    //       FROM c
+    //      ORDER BY RANK RRF(
+    //        FullTextScore(c.text, ["keyword"]),
+    //        VectorDistance(c.vector, [1,2,3]))`
+    const querySpec = {
+      query: `
+          SELECT TOP 3
+            c.id,
+            c.title,
+            c.content,
+            c.itemType,
+            c.dateCreated,
+            c.metadata
+          FROM c
+          ORDER BY RANK RRF(FullTextScore(c.title, ["portal", "Demonstro"]),
+            VectorDistance(c.metadataVector, @searchVector))`,
+      parameters: [{ name: '@searchVector', value: searchVector }],
+    };
+
+    const { resources } = await container.items.query(querySpec).fetchAll();
+    return resources;
+  }
 }

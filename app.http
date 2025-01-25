@@ -46,8 +46,6 @@ GET http://localhost:8000/knowledge-items/text-search-content
 ### Hybrid Search-content (vector + full-text)
 GET http://localhost:8000/knowledge-items/hybrid-search-content
     ?searchText=project management
-    &top=10
-    &department=PMO
 
 ### Hybrid Search-metadata (vector + full-text)
 GET http://localhost:8000/knowledge-items/hybrid-search-metadata
