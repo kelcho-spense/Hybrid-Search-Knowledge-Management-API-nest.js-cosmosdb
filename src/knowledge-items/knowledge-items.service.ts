@@ -173,42 +173,6 @@ export class KnowledgeItemsService {
     return resources;
   }
 
-  // async hybridSearchContent(params: hybridSearchContentDto) {
-  //   let top = 10;
-  //   const container = this.databaseService.getContainer();
-  //   const searchVector = await generateTextVector(params.searchText);
-  //   const searchText = params.searchText.split(' ').filter((k) => k.length > 0);
-  //   if (params.top) {
-  //     top = parseInt(params.top.toString(), 10);
-  //   }
-  //   // https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/query/rrf
-  //   const querySpec = {
-  //     query: `
-  //       SELECT TOP ${top}
-  //         c.id,
-  //         c.title,
-  //         c.content,
-  //         c.itemType,
-  //         c.dateCreated,
-  //         c.metadata
-  //       FROM c
-  //       ORDER BY RANK RRF(
-  //         VectorDistance(c.contentVector, @searchVector),
-  //         ${searchText.length > 0 ? `FullTextScore(c.content, [${searchText.map((_, idx) => `@searchTerm${idx}`).join(', ')}])` : ''}
-  //       )`,
-  //     parameters: [
-  //       { name: '@searchVector', value: searchVector },
-  //       ...searchText.map((kw, idx) => ({
-  //         name: `@searchTerm${idx}`,
-  //         value: kw,
-  //       })),
-  //     ],
-  //   };
-
-  //   const { resources } = await container.items.query(querySpec).fetchAll();
-  //   return resources;
-  // }
-
   async hybridSearchContent(params: hybridSearchContentDto) {
     let top = 10;
     const container = this.databaseService.getContainer();
