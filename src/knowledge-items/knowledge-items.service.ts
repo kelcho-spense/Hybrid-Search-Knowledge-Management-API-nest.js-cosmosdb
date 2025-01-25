@@ -214,7 +214,7 @@ export class KnowledgeItemsService {
     const container = this.databaseService.getContainer();
 
     // Generate vector and prepare search terms
-    const searchVector = await generateTextVector('Demonstro, portal');
+    const searchVector = await generateTextVector(params.searchText.trim());
     const searchTerms = params.searchText
       .split(' ')
       .filter((term) => term.length > 0);
@@ -226,14 +226,10 @@ export class KnowledgeItemsService {
     }
 
     //     Construct query with proper RRF syntax
-    //     `SELECT TOP 10 *
-    //       FROM c
-    //      ORDER BY RANK RRF(
-    //        FullTextScore(c.text, ["keyword"]),
-    //        VectorDistance(c.vector, [1,2,3]))`
+    //     `SELECT TOP 10 * FROM c ORDER BY RANK RRF(FullTextScore(c.text, ["keyword"]), VectorDistance(c.vector, [1,2,3]))`
     const querySpec = {
       query: `
-          SELECT TOP 3
+          SELECT TOP ${top}
             c.id,
             c.title,
             c.content,
@@ -241,8 +237,9 @@ export class KnowledgeItemsService {
             c.dateCreated,
             c.metadata
           FROM c
-          ORDER BY RANK RRF(FullTextScore(c.title, ["portal", "Demonstro"]),
-            VectorDistance(c.metadataVector, @searchVector))`,
+          ORDER BY RANK RRF(
+            FullTextScore(c.content, [${searchTerms.map((i) => `"${i}"`).join(', ')}]),
+            VectorDistance(c.content, @searchVector))`,
       parameters: [{ name: '@searchVector', value: searchVector }],
     };
 
