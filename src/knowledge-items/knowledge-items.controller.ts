@@ -8,15 +8,9 @@ import {
   ValidationPipe,
   ParseIntPipe,
   ParseEnumPipe,
-  Optional,
 } from '@nestjs/common';
 import { KnowledgeItemsService } from './knowledge-items.service';
 import { CreateKnowledgeItemDto } from './dto/create-knowledge-item.dto';
-import {
-  fullTextSearchDto,
-  hybridSearchContentDto,
-  metadataVectorSearchDto,
-} from './dto';
 import { Department, ProjectContext } from './entities/knowledge-item.entity';
 
 @Controller('knowledge-items')
