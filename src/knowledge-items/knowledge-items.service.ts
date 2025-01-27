@@ -13,15 +13,13 @@ import { generateTextVector } from '../utils/embedding';
 @Injectable()
 export class KnowledgeItemsService {
   constructor(private readonly databaseService: DatabaseService) {}
-
-  async create(createKnowledgeItemDto: CreateKnowledgeItemDto) {
-    const contentVector = await generateTextVector(
-      createKnowledgeItemDto.content,
-    );
+  // create method
+  async create(params: CreateKnowledgeItemDto) {
+    const contentVector = await generateTextVector(params.content.trim());
     const container = this.databaseService.getContainer();
 
     const item = {
-      ...createKnowledgeItemDto,
+      ...params,
       contentVector,
       dateCreated: new Date(),
     };
@@ -29,7 +27,7 @@ export class KnowledgeItemsService {
     const { resource } = await container.items.create(item);
     return resource;
   }
-
+  // allKnowledgeItems method
   async allKnowledgeItems() {
     const container = this.databaseService.getContainer();
 
@@ -48,11 +46,13 @@ export class KnowledgeItemsService {
       .fetchAll();
     return resources;
   }
-
   // vectorSearchContent method
   async vectorSearchContent(params: contentVectorSearchDto) {
+    if (params.top === undefined) {
+      params.top = 10;
+    }
     const container = this.databaseService.getContainer();
-    const searchVector = await generateTextVector(params.searchText);
+    const searchVector = await generateTextVector(params.searchText.trim());
 
     const querySpec = {
       query: `
@@ -79,9 +79,13 @@ export class KnowledgeItemsService {
   }
   // vectorSearchMetadata method
   async vectorSearchMetadata(params: metadataVectorSearchDto) {
+    if (params.top === undefined) {
+      params.top = 10;
+    }
     const container = this.databaseService.getContainer();
-
-    const vectorSearchQuery = await generateTextVector(params.searchText);
+    const vectorSearchQuery = await generateTextVector(
+      params.searchText.trim(),
+    );
 
     const querySpec = {
       query: `
@@ -108,17 +112,10 @@ export class KnowledgeItemsService {
     const { resources } = await container.items.query(querySpec).fetchAll();
     return resources;
   }
-
-  // vectorSearchMetadata method
-  async titleFullTextSearch(titleFullTextSearchDto: fullTextSearchDto) {
-    let top = 10;
+  // full-textSearchTitle method
+  async titleFullTextSearch({ searchText, top = 10 }: fullTextSearchDto) {
     const container = this.databaseService.getContainer();
-    const keywords = titleFullTextSearchDto.searchText
-      .split(' ')
-      .filter((k) => k.length > 0);
-    if (titleFullTextSearchDto.top) {
-      top = parseInt(titleFullTextSearchDto.top.toString(), 10);
-    }
+    const keywords = searchText.split(' ').filter((k) => k.length > 0);
 
     const querySpec = {
       query: `
@@ -142,14 +139,10 @@ export class KnowledgeItemsService {
     const { resources } = await container.items.query(querySpec).fetchAll();
     return resources;
   }
-
-  async contentFullTextSearch(params: fullTextSearchDto) {
-    let top = 10;
+  //full-textSearchContent method
+  async contentFullTextSearch({ searchText, top = 10 }: fullTextSearchDto) {
     const container = this.databaseService.getContainer();
-    const keywords = params.searchText.split(' ').filter((k) => k.length > 0);
-    if (params.top) {
-      top = parseInt(params.top.toString(), 10);
-    }
+    const keywords = searchText.split(' ').filter((k) => k.length > 0);
 
     const querySpec = {
       query: `
@@ -173,22 +166,13 @@ export class KnowledgeItemsService {
     const { resources } = await container.items.query(querySpec).fetchAll();
     return resources;
   }
-
-  async hybridSearchContent(params: hybridSearchContentDto) {
-    let top = 10;
+  // hybridSearchContent method
+  async hybridSearchContent({ searchText, top = 10 }: hybridSearchContentDto) {
     const container = this.databaseService.getContainer();
 
     // Generate vector and prepare search terms
-    const searchVector = await generateTextVector(params.searchText.trim());
-    const searchTerms = params.searchText
-      .split(' ')
-      .filter((term) => term.length > 0);
-    if (params.top) {
-      top = parseInt(params.top.toString(), 10);
-      if (isNaN(top)) {
-        throw new Error("The 'top' parameter must be a valid number.");
-      }
-    }
+    const searchVector = await generateTextVector(searchText.trim());
+    const searchTerms = searchText.split(' ').filter((term) => term.length > 0);
 
     //     Construct query with proper RRF syntax
     //     `SELECT TOP 10 * FROM c ORDER BY RANK RRF(FullTextScore(c.text, ["keyword"]), VectorDistance(c.vector, [1,2,3]))`

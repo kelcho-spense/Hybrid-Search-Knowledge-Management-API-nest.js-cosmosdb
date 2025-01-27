@@ -23,21 +23,21 @@ GET http://localhost:8000/knowledge-items/all
 ### Vector Search (metadata)
 GET http://localhost:8000/knowledge-items/vector-search-metadata
     ?searchText=enterprise project management
-    &top=10
     &department=PMO
     &projectContext=enterprise
+    &top=10
 
 ### Vector Search (Content)
 GET http://localhost:8000/knowledge-items/vector-search-content
     ?searchText=project management methodology
-    &top=10
     &department=PMO
     &projectContext=enterprise
+    &top=10
 
 ### Full Text Search(Title)
 GET http://localhost:8000/knowledge-items/text-search-title
-    ?searchText= project
-    &top=10
+    ?searchText=project
+    &top=1
 
 ### Full Text Search(Content)
 GET http://localhost:8000/knowledge-items/text-search-content
@@ -47,12 +47,7 @@ GET http://localhost:8000/knowledge-items/text-search-content
 ### Hybrid Search-content (vector + full-text)
 GET http://localhost:8000/knowledge-items/hybrid-search-content
     ?searchText=Arca
-    &top=3
+    &top=5
 
-### Hybrid Search-metadata (vector + full-text)
-GET http://localhost:8000/knowledge-items/hybrid-search-metadata
-    ?searchText=project management
-    &top=10
-    &department=PMO
 ### generate fake data
 GET http://localhost:8000/generate-fake-knowledgeItems

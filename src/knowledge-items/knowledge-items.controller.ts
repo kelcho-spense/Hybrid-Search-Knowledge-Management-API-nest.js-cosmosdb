@@ -21,7 +21,7 @@ import { Department, ProjectContext } from './entities/knowledge-item.entity';
 
 @Controller('knowledge-items')
 export class KnowledgeItemsController {
-  constructor(private readonly knowledgeItemsService: KnowledgeItemsService) { }
+  constructor(private readonly knowledgeItemsService: KnowledgeItemsService) {}
 
   @Post()
   create(@Body() createKnowledgeItemDto: CreateKnowledgeItemDto) {
@@ -65,19 +65,32 @@ export class KnowledgeItemsController {
   }
 
   @Get('text-search-title')
-  async titleFullTextSearch(@Query(ValidationPipe) query: fullTextSearchDto) {
-    return this.knowledgeItemsService.titleFullTextSearch(query);
+  async titleFullTextSearch(
+    @Query('searchText', ValidationPipe) searchText: string,
+    @Query('top', new ParseIntPipe({ optional: true })) top?: number,
+  ) {
+    return this.knowledgeItemsService.titleFullTextSearch({ searchText, top });
   }
 
   @Get('text-search-content')
-  async contentFullTextSearch(@Query(ValidationPipe) query: fullTextSearchDto) {
-    return this.knowledgeItemsService.contentFullTextSearch(query);
+  async contentFullTextSearch(
+    @Query('searchText', ValidationPipe) searchText: string,
+    @Query('top', new ParseIntPipe({ optional: true })) top?: number,
+  ) {
+    return this.knowledgeItemsService.contentFullTextSearch({
+      searchText,
+      top,
+    });
   }
 
   @Get('hybrid-search-content')
   async hybridSearchContent(
-    @Query(ValidationPipe) query: hybridSearchContentDto,
+    @Query('searchText', ValidationPipe) searchText: string,
+    @Query('top', new ParseIntPipe({ optional: true })) top?: number,
   ) {
-    return this.knowledgeItemsService.hybridSearchContent(query);
+    return this.knowledgeItemsService.hybridSearchContent({
+      searchText,
+      top,
+    });
   }
 }
