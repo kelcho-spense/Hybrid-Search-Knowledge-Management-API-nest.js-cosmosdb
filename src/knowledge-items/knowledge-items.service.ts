@@ -51,7 +51,6 @@ export class KnowledgeItemsService {
 
   // vectorSearchContent method
   async vectorSearchContent(params: contentVectorSearchDto) {
-    const topCount = parseInt(params.top.toString(), 10);
     const container = this.databaseService.getContainer();
     const searchVector = await generateTextVector(params.searchText);
 
@@ -66,10 +65,12 @@ export class KnowledgeItemsService {
         c.dateCreated,
         VectorDistance(c.contentVector, @searchVector) as SimilarityScore
         FROM c
+        WHERE c.metadata.projectContext = @projectContext
         ORDER BY VectorDistance(c.contentVector, @searchVector)`,
       parameters: [
-        { name: '@top', value: topCount },
+        { name: '@top', value: params.top },
         { name: '@searchVector', value: searchVector },
+        { name: '@projectContext', value: params.projectContext },
       ],
     };
 
@@ -78,14 +79,13 @@ export class KnowledgeItemsService {
   }
   // vectorSearchMetadata method
   async vectorSearchMetadata(params: metadataVectorSearchDto) {
-    const topCount = parseInt(params.top.toString(), 10);
     const container = this.databaseService.getContainer();
 
     const vectorSearchQuery = await generateTextVector(params.searchText);
 
     const querySpec = {
       query: `
-      SELECT TOP @top 
+      SELECT TOP @top
         c.id,
         c.title,
         c.content,
@@ -94,11 +94,11 @@ export class KnowledgeItemsService {
         c.dateCreated,
         VectorDistance(c.metadataVector, @searchVector) AS SimilarityScore
       FROM c
-      WHERE c.metadata.department = @department 
+      WHERE c.metadata.department = @department
         AND c.metadata.projectContext = @projectContext
       ORDER BY VectorDistance(c.metadataVector, @searchVector)`,
       parameters: [
-        { name: '@top', value: topCount },
+        { name: '@top', value: params.top },
         { name: '@department', value: params.department },
         { name: '@projectContext', value: params.projectContext },
         { name: '@searchVector', value: vectorSearchQuery },
@@ -109,6 +109,7 @@ export class KnowledgeItemsService {
     return resources;
   }
 
+  // vectorSearchMetadata method
   async titleFullTextSearch(titleFullTextSearchDto: fullTextSearchDto) {
     let top = 10;
     const container = this.databaseService.getContainer();

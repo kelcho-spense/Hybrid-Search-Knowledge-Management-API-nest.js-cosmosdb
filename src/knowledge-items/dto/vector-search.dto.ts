@@ -9,7 +9,7 @@ export interface departmentVectorSearchDto extends VectorSearchDto {
 }
 
 export interface contentVectorSearchDto extends VectorSearchDto {
-  content?: string;
+  projectContext?: string;
 }
 
 export interface projectContextVectorSearchDto extends VectorSearchDto {
