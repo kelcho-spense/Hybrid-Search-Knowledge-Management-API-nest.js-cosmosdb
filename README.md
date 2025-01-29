@@ -40,6 +40,20 @@ This project demonstrates building an enterprise knowledge management system usi
 ```bash
 $ pnpm install
 ```
+### Environment Variables
+Create a `.env` file in the root directory and add the following environment variables:
+
+```bash
+# API PORT
+PORT=8000
+# COSMOS DB CONFIG
+AZURE_COSMOS_DB_ENDPOINT=https://<cosmosdb-account-name>.documents.azure.com:443/
+COSMOS_DB_KEY=<cosmosdb-account-key>
+AZURE_COSMOS_DB_NAME=<cosmosdb-database-name>
+# AZURE OPENAI
+AZURE_OPENAI_API_KEY=<azure-openai-api-key>
+AZURE_OPENAI_TEXT_EMBEDDING_MODEL_ENDPOINT=<azure-openai-text-embedding-model-endpoint>
+```
 
 ## Running the Application
 
