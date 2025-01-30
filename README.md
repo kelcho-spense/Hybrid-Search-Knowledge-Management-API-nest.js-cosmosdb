@@ -8,7 +8,7 @@ Azure Cosmos DB for NoSQL now supports a powerful hybrid search capability that 
 
 
 <a href="https://learn.microsoft.com/azure/cosmos-db/gen-ai/hybrid-search?WT.mc_id=MVP_406617"  target="_blank">
-<img src="./images/Hybrid Search.svg" />
+<img src="./images/Hybrid-Search.svg" />
 </a>
 
 ## Enterprise Knowledge Management system with Hybrid Search, Azure Cosmos DB & Nest.js
