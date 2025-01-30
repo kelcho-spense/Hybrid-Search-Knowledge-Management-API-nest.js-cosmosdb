@@ -1,5 +1,3 @@
-// src/knowledge-items/entities/knowledge-item.entity.ts
-
 export enum Department {
   PMO = 'PMO',
   Engineering = 'Engineering',
