@@ -1,6 +1,7 @@
 import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './http-exception.filter';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,6 +10,11 @@ async function bootstrap() {
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
-  await app.listen(process.env.PORT ?? 3000);
+  // Get ConfigService
+  const configService = app.get(ConfigService);
+
+  // Use ConfigService to get PORT value with fallback to 3000
+  const port = configService.get('PORT', 3000);
+  await app.listen(port);
 }
 bootstrap();
