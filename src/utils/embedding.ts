@@ -25,7 +25,7 @@ export async function generateTextVector(text: string): Promise<number[]> {
   if (!response.data || response.data.length === 0) {
     throw new Error("No embedding data returned from API");
   }
-
+// console.log(response.data[0].embedding)
   return response.data[0].embedding;
 }
 
