@@ -21,10 +21,10 @@ export class DatabaseService implements OnModuleInit {
 
   constructor(private configService: ConfigService) {
     this.client = new CosmosClient({
-      endpoint: this.configService.get<string>('AZURE_COSMOS_DB_ENDPOINT'),
-      key: this.configService.get<string>('AZURE_COSMOS_DB_KEY'),
+      endpoint: this.configService.getOrThrow<string>('AZURE_COSMOS_DB_ENDPOINT'),
+      key: this.configService.getOrThrow<string>('AZURE_COSMOS_DB_KEY'),
       diagnosticLevel:
-        this.configService.get<string>('NODE_ENV') != 'production'
+        this.configService.getOrThrow<string>('NODE_ENV') != 'production'
           ? CosmosDbDiagnosticLevel.debug
           : CosmosDbDiagnosticLevel.info,
     });
@@ -35,7 +35,7 @@ export class DatabaseService implements OnModuleInit {
   }
 
   private async initDatabase() {
-    const dbName = this.configService.get<string>('AZURE_COSMOS_DB_NAME');
+    const dbName = this.configService.getOrThrow<string>('AZURE_COSMOS_DB_NAME');
     const { database } = await this.client.databases.createIfNotExists({
       id: dbName,
     });

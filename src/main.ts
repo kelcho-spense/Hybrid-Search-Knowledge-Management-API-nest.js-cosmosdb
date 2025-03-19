@@ -14,7 +14,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   // Use ConfigService to get PORT value with fallback to 3000
-  const port = configService.get('PORT', 3000);
+  const port = configService.getOrThrow('PORT', 3000);
   await app.listen(port);
 }
 bootstrap();

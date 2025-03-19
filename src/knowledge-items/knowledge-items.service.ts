@@ -9,22 +9,26 @@ import {
   metadataVectorSearchDto,
 } from './dto';
 import { generateTextVector } from '../utils/embedding';
+import { Container } from '@azure/cosmos';
 
 @Injectable()
 export class KnowledgeItemsService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  private container: Container;
+  constructor(private readonly databaseService: DatabaseService) { }
+
+  onModuleInit() {
+    this.container = this.databaseService.getContainer();
+  }
   // create method
   async create(params: CreateKnowledgeItemDto) {
     const contentVector = await generateTextVector(params.content.trim());
-    const container = this.databaseService.getContainer();
-
     const item = {
       ...params,
       contentVector,
       dateCreated: new Date(),
     };
 
-    const { resource } = await container.items.create(item);
+    const { resource } = await this.container.items.create(item);
     return resource;
   }
   // allKnowledgeItems method
@@ -51,7 +55,6 @@ export class KnowledgeItemsService {
     if (params.top === undefined) {
       params.top = 10;
     }
-    const container = this.databaseService.getContainer();
     const searchVector = await generateTextVector(params.searchText.trim());
 
     const querySpec = {
@@ -74,7 +77,7 @@ export class KnowledgeItemsService {
       ],
     };
 
-    const { resources } = await container.items.query(querySpec).fetchAll();
+    const { resources } = await this.container.items.query(querySpec).fetchAll();
     return resources;
   }
   // vectorSearchMetadata method
@@ -82,7 +85,6 @@ export class KnowledgeItemsService {
     if (params.top === undefined) {
       params.top = 10;
     }
-    const container = this.databaseService.getContainer();
     const vectorSearchQuery = await generateTextVector(
       params.searchText.trim(),
     );
@@ -109,12 +111,11 @@ export class KnowledgeItemsService {
       ],
     };
 
-    const { resources } = await container.items.query(querySpec).fetchAll();
+    const { resources } = await this.container.items.query(querySpec).fetchAll();
     return resources;
   }
   // full-textSearchTitle method
   async titleFullTextSearch({ searchText, top = 10 }: fullTextSearchDto) {
-    const container = this.databaseService.getContainer();
     const keywords = searchText.split(' ').filter((k) => k.length > 0);
 
     const querySpec = {
@@ -136,12 +137,11 @@ export class KnowledgeItemsService {
       ],
     };
 
-    const { resources } = await container.items.query(querySpec).fetchAll();
+    const { resources } = await this.container.items.query(querySpec).fetchAll();
     return resources;
   }
   //full-textSearchContent method
   async contentFullTextSearch({ searchText, top = 10 }: fullTextSearchDto) {
-    const container = this.databaseService.getContainer();
     const keywords = searchText.split(' ').filter((k) => k.length > 0);
 
     const querySpec = {
@@ -163,13 +163,12 @@ export class KnowledgeItemsService {
       ],
     };
 
-    const { resources } = await container.items.query(querySpec).fetchAll();
+    const { resources } = await this.container.items.query(querySpec).fetchAll();
     return resources;
   }
   // hybridSearchContent method
   async hybridSearchContent({ searchText, top = 10 }: hybridSearchContentDto) {
-    const container = this.databaseService.getContainer();
-
+  
     // Generate vector and prepare search terms
     const searchVector = await generateTextVector(searchText.trim());
     const searchTerms = searchText.split(' ').filter((term) => term.length > 0);
@@ -192,7 +191,7 @@ export class KnowledgeItemsService {
       parameters: [{ name: '@searchVector', value: searchVector }],
     };
 
-    const { resources } = await container.items.query(querySpec).fetchAll();
+    const { resources } = await this.container.items.query(querySpec).fetchAll();
     return resources;
   }
 }

@@ -16,7 +16,7 @@ The [initDatabase()](vscode-file://vscode-app/c:/Users/KevinComba/AppData/Local/
 
 #### Database Creation
 
-First, the method retrieves the database name from a configuration service using `this.configService.get<string>('AZURE_COSMOS_DB_NAME')`. It then uses the Cosmos DB client to create the database if it doesn't already exist via the [createIfNotExists](vscode-file://vscode-app/c:/Users/KevinComba/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/code/electron-sandbox/workbench/workbench.html) method. This approach is idempotent, meaning it can be run multiple times without creating duplicate databases. Once created or retrieved, the database reference is stored in `this.database` for later use.
+First, the method retrieves the database name from a configuration service using `this.configService.getOrThrow<string>('AZURE_COSMOS_DB_NAME')`. It then uses the Cosmos DB client to create the database if it doesn't already exist via the [createIfNotExists](vscode-file://vscode-app/c:/Users/KevinComba/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/code/electron-sandbox/workbench/workbench.html) method. This approach is idempotent, meaning it can be run multiple times without creating duplicate databases. Once created or retrieved, the database reference is stored in `this.database` for later use.
 
 #### Container Configuration
 
