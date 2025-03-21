@@ -27,11 +27,10 @@ This project demonstrates building an enterprise knowledge management system usi
 ### Setup Requirements
 
 1. Provision an Azure Cosmos DB account on the Azure portal
-
 2. Enable full-text search preview feature in Azure Cosmos DB
-![alt text](./images/full-text-search.png)
+   ![alt text](./images/full-text-search.png)
 3. Enable vector search preview feature in Azure Cosmos DB
-![alt text](./images/vector-search.png)
+   ![alt text](./images/vector-search.png)
 
 ## Project Setup
 
@@ -46,13 +45,21 @@ Create a `.env` file in the root directory and add the following environment var
 ```bash
 # API PORT
 PORT=8000
-# COSMOS DB CONFIG
-AZURE_COSMOS_DB_ENDPOINT=https://<cosmosdb-account-name>.documents.azure.com:443/
-COSMOS_DB_KEY=<cosmosdb-account-key>
-AZURE_COSMOS_DB_NAME=<cosmosdb-database-name>
+
+# COSMOS DB
+AZURE_COSMOS_DB_ENDPOINT=https://<your-endpoint>.documents.azure.com:443/
+AZURE_COSMOS_DB_KEY=<your-key>
+AZURE_COSMOS_DB_NAME=<your-db-name>
+
 # AZURE OPENAI
-AZURE_OPENAI_API_KEY=<azure-openai-api-key>
-AZURE_OPENAI_TEXT_EMBEDDING_MODEL_ENDPOINT=<azure-openai-text-embedding-model-endpoint>
+AZURE_OPENAI_API_KEY=<your-open-ai-key>
+AZURE_OPENAI_TEXT_EMBEDDING_MODEL_ENDPOINT=<your-embedding-model-endpoint>
+AZURE_OPENAI_TEXT_EMBEDDING_MODEL_NAME=<your-embedding-model-name>
+AZURE_OPENAI_TEXT_EMBEDDING_MODEL_DEPLOYMENT_NAME=<your-embedding-model-deployment-name>
+AZURE_OPENAI_TEXT_EMBEDDING_MODEL_API_VERSION=<your-embedding-model-api-version>
+
+## node env
+NODE_ENV=development ## development or production
 ```
 
 ## Running the Application
