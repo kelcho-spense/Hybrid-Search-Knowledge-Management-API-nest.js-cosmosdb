@@ -168,7 +168,7 @@ export class KnowledgeItemsService {
   }
   // hybridSearchContent method
   async hybridSearchContent({ searchText, top = 10 }: hybridSearchContentDto) {
-  
+
     // Generate vector and prepare search terms
     const searchVector = await generateTextVector(searchText.trim());
     const searchTerms = searchText.split(' ').filter((term) => term.length > 0);
@@ -193,5 +193,14 @@ export class KnowledgeItemsService {
 
     const { resources } = await this.container.items.query(querySpec).fetchAll();
     return resources;
+  }
+  // delete all records
+  async deleteAll() {
+    const { resources } = await this.container.items.query('SELECT * FROM c').fetchAll();
+    for (const resource of resources) {
+      await this.container.item(resource.id, resource.id).container.delete();
+    }
+
+    return `Deleted ${resources.length} records`;
   }
 }

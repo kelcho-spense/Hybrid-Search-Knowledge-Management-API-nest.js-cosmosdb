@@ -21,7 +21,7 @@ export enum ProjectContext {
   Individual = 'individual',
 }
 
-export class KnowledgeItem {
+export interface KnowledgeItem {
   id: string;
   title: string;
   content: string;

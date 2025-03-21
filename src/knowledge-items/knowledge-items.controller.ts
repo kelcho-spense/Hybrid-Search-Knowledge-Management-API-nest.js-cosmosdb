@@ -8,6 +8,7 @@ import {
   ValidationPipe,
   ParseIntPipe,
   ParseEnumPipe,
+  Delete,
 } from '@nestjs/common';
 import { KnowledgeItemsService } from './knowledge-items.service';
 import { CreateKnowledgeItemDto } from './dto/create-knowledge-item.dto';
@@ -86,5 +87,10 @@ export class KnowledgeItemsController {
       searchText,
       top,
     });
+  }
+
+  @Delete()
+  async deleteKnowledgeItem() {
+    return this.knowledgeItemsService.deleteAll();
   }
 }

@@ -20,34 +20,153 @@ Content-Type: application/json
 ### get all knowledge items
 GET http://localhost:8000/knowledge-items/all
 
-### Vector Search (metadata)
-GET http://localhost:8000/knowledge-items/vector-search-metadata
-    ?searchText=enterprise project management
-    &department=PMO
-    &projectContext=enterprise
-    &top=10
-
-### Vector Search (Content)
-GET http://localhost:8000/knowledge-items/vector-search-content
-    ?searchText=project management methodology
-    &department=PMO
-    &projectContext=enterprise
-    &top=10
-
-### Full Text Search(Title)
-GET http://localhost:8000/knowledge-items/text-search-title
-    ?searchText=project
-    &top=1
-
-### Full Text Search(Content)
-GET http://localhost:8000/knowledge-items/text-search-content
-    ?searchText=Sublime
-    &top=1
-
-### Hybrid Search-content (vector + full-text)
-GET http://localhost:8000/knowledge-items/hybrid-search-content
-    ?searchText=Arca
-    &top=5
-
 ### generate fake data
 GET http://localhost:8000/generate-fake-knowledgeItems
+
+### Delete all knowledge items
+DELETE http://localhost:8000/knowledge-items
+
+
+
+### ============================================================
+### VECTOR SEARCH DEMOS - Semantic Understanding
+### ============================================================
+
+### 1. Vector Search - Finding information about vector search technology
+### This demonstrates finding semantically related content even with different terminology
+GET http://localhost:8000/knowledge-items/vector-search-content
+    ?searchText=nearest neighbor algorithms for similarity matching
+    &projectContext=team
+    &top=3
+
+### 2. Vector Search - HR policies for remote work
+### Shows how vector search understands concepts even with different wording
+GET http://localhost:8000/knowledge-items/vector-search-content
+    ?searchText=policies for employees working from home
+    &projectContext=enterprise
+    &top=3
+
+### 3. Vector Search - Engineering best practices
+### Finds conceptually related content about software engineering practices
+GET http://localhost:8000/knowledge-items/vector-search-content
+    ?searchText=software architecture design patterns
+    &projectContext=department
+    &top=3
+
+### 4. Vector Search - Project Management (metadata)
+### Shows how metadata vector search works with project management concepts
+GET http://localhost:8000/knowledge-items/vector-search-metadata
+    ?searchText=risk evaluation in agile projects
+    &department=PMO
+    &projectContext=department
+    &top=5
+
+### ============================================================
+### FULL-TEXT SEARCH DEMOS - Keyword Precision
+### ============================================================
+
+### 1. Full-Text Search - Finding specific technology terms in titles
+### Shows precision in finding exact keywords
+GET http://localhost:8000/knowledge-items/text-search-title
+    ?searchText=vector database
+    &top=3
+
+### 2. Full-Text Search - Finding specific technologies in content
+### Shows how full-text search excels with specific terminology
+GET http://localhost:8000/knowledge-items/text-search-content
+    ?searchText=ANN Approximate Nearest Neighbor
+    &top=3
+
+## 3. Full-Text Search - Finding all project management content
+### Shows how keyword search works across multiple documents
+# GET http://localhost:8000/knowledge-items/text-search-content
+#     ?searchText=project management
+#     &top=5
+
+### 4. Full-Text Search - Finding content with specific department names
+GET http://localhost:8000/knowledge-items/text-search-content
+    ?searchText=Engineering department
+    &top=3
+
+### ============================================================
+### HYBRID SEARCH DEMOS - Combined Power
+### ============================================================
+
+### 1. Hybrid Search - Technical query with domain-specific terminology
+### Demonstrates finding both exact matches and semantically related content
+GET http://localhost:8000/knowledge-items/hybrid-search-content
+    ?searchText=vector embeddings for semantic search
+    &top=5
+
+### 2. Hybrid Search - Business process query
+### Shows how hybrid search handles business terminology across departments
+GET http://localhost:8000/knowledge-items/hybrid-search-content
+    ?searchText=employee performance evaluation process
+    &top=3
+
+### 3. Hybrid Search - Finding content about database optimization
+### Shows hybrid search finding both exact and related optimization content
+GET http://localhost:8000/knowledge-items/hybrid-search-content
+    ?searchText=database performance tuning
+    &top=3
+
+### 4. Hybrid Search - Finding content about remote team collaboration
+### Demonstrates finding content across HR and other departments
+GET http://localhost:8000/knowledge-items/hybrid-search-content
+    ?searchText=virtual team collaboration strategies
+    &top=3
+
+### ============================================================
+### COMPARISON DEMOS - Same Query, Different Search Methods
+### ============================================================
+
+### 1.A Vector Search - Project Management Methodology
+GET http://localhost:8000/knowledge-items/vector-search-content
+    ?searchText=project management methodology
+    &projectContext=enterprise
+    &top=3
+
+### 1.B Full-Text Search - Project Management Methodology
+GET http://localhost:8000/knowledge-items/text-search-content
+    ?searchText=project management methodology
+    &top=3
+
+### 1.C Hybrid Search - Project Management Methodology
+GET http://localhost:8000/knowledge-items/hybrid-search-content
+    ?searchText=project management methodology
+    &top=3
+
+### 2.A Vector Search - Vector Database Implementation
+GET http://localhost:8000/knowledge-items/vector-search-content
+    ?searchText=vector database implementation
+    &projectContext=team
+    &top=3
+
+### 2.B Full-Text Search - Vector Database Implementation
+GET http://localhost:8000/knowledge-items/text-search-content
+    ?searchText=vector database implementation
+    &top=3
+
+### 2.C Hybrid Search - Vector Database Implementation
+GET http://localhost:8000/knowledge-items/hybrid-search-content
+    ?searchText=vector database implementation
+    &top=3
+
+### ============================================================
+### SPECIALTY DEMOS - Edge Cases and Advanced Features
+### ============================================================
+
+### 1. Misspelled Query - Testing robustness
+GET http://localhost:8000/knowledge-items/hybrid-search-content
+    ?searchText=vecto datbase implmentation
+    &top=3
+
+### 2. Cross-Domain Query - Combines HR and Engineering concepts
+GET http://localhost:8000/knowledge-items/hybrid-search-content
+    ?searchText=remote work security protocols
+    &top=3
+
+### 3. Minimal Query - Very short but meaningful
+GET http://localhost:8000/knowledge-items/hybrid-search-content
+    ?searchText=ROI
+    &top=3
