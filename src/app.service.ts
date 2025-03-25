@@ -6,7 +6,6 @@ import {
   ItemType,
   ProjectContext,
 } from './knowledge-items/entities/knowledge-item.entity';
-import { faker } from '@faker-js/faker';
 import { generateTextVector } from './utils/embedding';
 import { v4 as uuidv4 } from 'uuid';
 import { Container } from '@azure/cosmos';

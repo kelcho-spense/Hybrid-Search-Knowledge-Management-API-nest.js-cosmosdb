@@ -74,14 +74,14 @@ GET http://localhost:8000/knowledge-items/text-search-title
 ### 2. Full-Text Search - Finding specific technologies in content
 ### Shows how full-text search excels with specific terminology
 GET http://localhost:8000/knowledge-items/text-search-content
-    ?searchText=ANN Approximate Nearest Neighbor
+    ?searchText=Wellness
     &top=3
 
 ## 3. Full-Text Search - Finding all project management content
 ### Shows how keyword search works across multiple documents
-# GET http://localhost:8000/knowledge-items/text-search-content
-#     ?searchText=project management
-#     &top=5
+GET http://localhost:8000/knowledge-items/text-search-content
+    ?searchText=Remote Work
+    &top=5
 
 ### 4. Full-Text Search - Finding content with specific department names
 GET http://localhost:8000/knowledge-items/text-search-content

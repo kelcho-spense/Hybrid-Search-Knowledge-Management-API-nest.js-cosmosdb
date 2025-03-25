@@ -4,8 +4,8 @@ export const knowledgeItemFullTextPolicy: FullTextPolicy = {
   defaultLanguage: 'en-US',
   fullTextPaths: [
     {
-      language: 'en-US',
       path: '/title',
+      language: 'en-US',
     },
     {
       path: '/content',
